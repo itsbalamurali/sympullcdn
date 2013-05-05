@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 #
-
+import webapp2
 from google.appengine.ext import db
-from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api.urlfetch import fetch
 import datetime
 import models
 import hutils
 import re
+import os
+
 
 ################################################################################
 #                        SymPullCDN Configuration                              #
@@ -44,7 +45,7 @@ class Entity(db.Model):
     status       = db.IntegerProperty()
     content      = db.BlobProperty(required=True)
 
-class MainHandler(webapp.RequestHandler):
+class MainHandler(webapp2.RequestHandler):
     def get(self):
 
        ############################################################################################
@@ -82,7 +83,7 @@ class MainHandler(webapp.RequestHandler):
                     self.response.headers["X-SymPullCDN-Status"] = "Hit[EVALIDFAIL]"
                     self.response.out.write(entity.content)
                     entity.delete()
-                    return True
+                    return
             
             # See if we can send a 304
             if "If-Modified-Since" in self.request.headers:
@@ -92,14 +93,14 @@ class MainHandler(webapp.RequestHandler):
                     self.response.set_status(304)
                     self.response.headers["X-SymPullCDN-Status"] = "Hit[304]"
                     self.response.out.write(None)
-                    return True
+                    return
 
             for key in iter(entity.headers):
                 self.response.headers[key] = entity.headers[key]
             self.response.set_status(entity.status)
             self.response.headers["X-SymPullCDN-Status"] = "Hit[200]"
             self.response.out.write(entity.content)
-            return True
+            return
        
        ############################################################################################
        #                                                                                          #
@@ -117,7 +118,7 @@ class MainHandler(webapp.RequestHandler):
                 for key in iter(request_entity.headers):
                     self.response.headers[key] = request_entity.headers[key]
                 self.response.out.write(request_entity.content)
-                return True
+                return
         # Only Cache Specific Codes
         if request_entity.status_code not in cache_codes:
             self.response.headers["X-SymPullCDN-Status"] = "Miss[NoCode]"
@@ -125,7 +126,7 @@ class MainHandler(webapp.RequestHandler):
                 self.response.headers[key] = request_entity.headers[key]
             self.response.set_status(request_entity.status_code)
             self.response.out.write(request_entity.content)
-            return True
+            return
         
         # Set up data to store.
         entity = Entity(
@@ -142,11 +143,5 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(request_entity.content)
 
 
-def main():
-    application = webapp.WSGIApplication([('/.*', MainHandler)],
-                                         debug=True)
-    util.run_wsgi_app(application)
-
-
-if __name__ == '__main__':
-    main()
+app = webapp2.WSGIApplication([('/.*', MainHandler)],
+                              debug=True)
