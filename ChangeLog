@@ -2,3 +2,5 @@ Version 0.1 / September 29, 2010
 - Inital Version
 Version 0.01 / May 5, 2013
 - Initial Version - Migrated to Python 2.7 (NB)
+Version 0.02 / May 6, 2013
+- Implement ping & cron to keep GAE instance alive.
