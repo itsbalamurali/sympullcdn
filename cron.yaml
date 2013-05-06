@@ -1,0 +1,10 @@
+cron:
+- description: Repopulate the cache every 3 minutes
+  url: /ping
+  schedule: every 3 minutes
+- description: Repopulate the cache every 7 minutes
+  url: /ping
+  schedule: every 7 minutes
+- description: Repopulate the cache every 11 minutes
+  url: /ping
+  schedule: every 11 minutes  
