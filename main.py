@@ -18,7 +18,7 @@ import os
 #  1. Origin                                                                   #
 #     The origin server will be mirrored by this instance of SymPullCDN        #
 #     configure a full http:// path with a FQDN, trailing slash included       #
-origin = "http://replace*me/"                                                  #
+origin = "https://weargeek.in/"                                                #
 #                                                                              #
 #  2. Cachable Codes                                                           #
 #     This is a list of HTTP Status Codes that will be cached when sent from   #
